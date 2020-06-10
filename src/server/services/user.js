@@ -12,10 +12,11 @@ userService.getUser = function(userId) {
     return _.sortBy(users[userId]);
 };
 
-userService.getList = function(accessToken) {
+userService.getList = function() {
     var users = dao.getUsers();
     var userIds = Object.keys(users);
-    return facebookService.getUsers(accessToken, userIds)
+
+    return facebookService.getUsers(userIds)
         .then(function(facebookUsers) {
             return _(facebookUsers)
                 .map(function(user) {
