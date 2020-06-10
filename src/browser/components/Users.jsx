@@ -1,5 +1,7 @@
 var React = require('react');
 var Link = require('react-router').Link;
+import List from 'react-virtualized/dist/commonjs/List';
+import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 var userService = require('../services/user');
 
@@ -31,21 +33,32 @@ module.exports = React.createClass({
             });
         }
 
-        users = users.slice(0, 20);
+        const rowRenderer = ({
+                                 index, // Index of row within collection
+                                 style, // Style object to be applied to row (to position it)
+                             }) => {
+            const user = users[index];
 
-        var userNodes = users.map(function (user) {
             return (
-                <Link key={user.id} className="user" activeClassName="selected" to={'/user/' + user.id}>
+                <Link key={user.id} className="user" activeClassName="selected" to={'/user/' + user.id} style={style}>
                     <img src={'http://graph.facebook.com/' + user.id + '/picture?type=square'} />
                     <div className="name">{user.name}</div>
                 </Link>
             );
-        });
+        }
+
+        var userNodes = <AutoSizer>{({ height, width }) => (<List
+            width={width}
+            height={height}
+            rowCount={users.length}
+            rowHeight={71}
+            rowRenderer={rowRenderer}
+        />)}</AutoSizer>;
 
         return (
-            <div>
+            <div style={{height: '100%'}}>
                 <input className="search" type="text" placeholder="Search" onChange={this.handleInputChange} value={this.state.query}/>
-                <div>{userNodes}</div>
+                <div style={{height: '100%'}}>{userNodes}</div>
             </div>
         );
     }
